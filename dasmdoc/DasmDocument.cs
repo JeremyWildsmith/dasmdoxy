@@ -46,7 +46,6 @@ namespace dasmdoc
                         break;
                     case DasmCommentType.Floating:
                         String sFilteredContent = Regex.Replace(docBlock.Content, "^(;;?)", String.Empty, RegexOptions.Multiline);
-
                         doc.m_floating.Add(new FloatingComment(sFilteredContent));
                         break;
                     default:
@@ -68,7 +67,7 @@ namespace dasmdoc
 
                 foreach (FloatingComment floating in m_floating)
                 {
-                    doc.addSection(new MarkupRawSection(String.Empty, false, floating.Comment));
+                    doc.addSection(new MarkupRawSection(String.Empty, MarkupSectionType.SubSection, floating.Comment));
                 }
 
                 foreach (Data data in m_data)
@@ -86,7 +85,7 @@ namespace dasmdoc
                         parameters.Add(new MarkupData(func.FileReference, param.Type, param.Name, param.Description));
 
                     doc.addFunction(new MarkupFunction(func.FileReference,
-                                    func.Name, func.Description,
+                                    func.Name, func.Description, func.CallingConvention,
                                     func.ReturnType, func.ReturnDescription,
                                     func.Documentation.Definition, parameters.ToArray()));
                 }

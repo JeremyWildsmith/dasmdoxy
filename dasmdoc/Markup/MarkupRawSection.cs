@@ -13,29 +13,20 @@ namespace dasmdoc.Markup
         private String m_sName;
         private String m_sContent;
 
-        private bool m_isSubSection;
+        private MarkupSectionType m_sectionType;
 
-        public MarkupRawSection(String sName, bool isSubSection, String sContent)
+        public MarkupRawSection(String sName, MarkupSectionType sectionType, String sContent)
         {
             m_sName = sName;
-            m_isSubSection = isSubSection;
+            m_sectionType = sectionType;
             m_sContent = sContent;
             m_iSections++;
         }
 
-        public MarkupRawSection(String sName, bool isSubSection)
+        public MarkupRawSection(String sName, MarkupSectionType sectionType)
         {
             m_sName = sName;
-            m_isSubSection = isSubSection;
-
-            m_sContent = String.Empty;
-            m_iSections++;
-        }
-
-        public MarkupRawSection(String sName)
-        {
-            m_sName = sName;
-            m_isSubSection = false; ;
+            m_sectionType = sectionType;
 
             m_sContent = String.Empty;
             m_iSections++;
@@ -73,7 +64,23 @@ namespace dasmdoc.Markup
                 StringBuilder sb = new StringBuilder();
 
                 if (this.m_sName.Length > 0)
-                    sb.AppendFormat("{0} {1} {2}\n{3}", (m_isSubSection ? "\\subsection" : "\\section"), this.Id, this.Name, this.m_sContent);
+                {
+                    switch (this.m_sectionType)
+                    {
+                        case MarkupSectionType.Section:
+                            sb.Append(@"\section");
+                            break;
+                        case MarkupSectionType.SubSection:
+                            sb.Append(@"\subsection");
+                            break;
+                        case MarkupSectionType.SubSubSection:
+                            sb.Append(@"\subsubsecion");
+                            break;
+                        default:
+                            throw new ParsingException("Invalid section type");
+                    }
+                    sb.AppendFormat(" {0} {1}\n{2}", this.Id, this.Name, this.m_sContent);
+                }
                 else
                     sb.AppendLine(m_sContent);
 

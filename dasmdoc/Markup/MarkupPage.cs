@@ -43,12 +43,29 @@ namespace dasmdoc.Markup
             m_rawSections.Add(section);
         }
 
+        public String Name
+        {
+            get
+            {
+                return m_sName;
+            }
+        }
+
+        public String DoxyName
+        {
+            get
+            {
+                return Regex.Replace(m_sName, "[^a-zA-Z0-9_]+", String.Empty);
+            }
+        }
+
         public override String MarkupEncoding
         {
             get
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("{0}\n----\n", m_sName);
+
+                sb.AppendFormat("\\page {0}\n {0}\n----\n", this.DoxyName);
                 sb.AppendLine(@"\tableofcontents");
 
                 foreach (KeyValuePair<String, String> attrib in m_attributes)
@@ -63,7 +80,7 @@ namespace dasmdoc.Markup
 
                 if(m_data.Count > 0)
                 {
-                    sb.Append(new MarkupRawSection("Data").MarkupEncoding);
+                    sb.Append(new MarkupRawSection("Data", MarkupSectionType.Section).MarkupEncoding);
 
                     foreach (MarkupData md in m_data)
                     {
@@ -73,7 +90,7 @@ namespace dasmdoc.Markup
 
                 if (m_functions.Count > 0)
                 {
-                    sb.Append(new MarkupRawSection("Functions").MarkupEncoding);
+                    sb.Append(new MarkupRawSection("Functions", MarkupSectionType.Section).MarkupEncoding);
                     foreach (MarkupFunction mf in m_functions)
                     {
                         sb.AppendFormat("***\n{0}\n\n", mf.MarkupEncoding);

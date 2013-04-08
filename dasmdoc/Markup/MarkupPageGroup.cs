@@ -5,7 +5,7 @@ using System.Text;
 
 namespace dasmdoc.Markup
 {
-    public class MarkupGroup : MarkupPrimitive
+    public class MarkupPageGroup : MarkupPrimitive
     {
         private static String GROUP_NAME_PREFIX = "DASMDOC_G";
         private static int m_iGroups = 0;
@@ -13,7 +13,7 @@ namespace dasmdoc.Markup
         private String m_sName;
         private List<MarkupPage> m_pages = new List<MarkupPage>();
 
-        public MarkupGroup(String sName)
+        public MarkupPageGroup(String sName)
         {
             m_sName = sName;
             m_iGroups++;
@@ -45,11 +45,15 @@ namespace dasmdoc.Markup
             get
             {
                 StringBuilder sb = new StringBuilder();
+                sb.AppendLine("The " + m_sName + " group contains the following pages:<br/>\n\n");
+                foreach (MarkupPage page in m_pages)
+                {
+                    sb.AppendFormat("- \\subpage {0}\n", page.DoxyName);
+                }
 
                 foreach (MarkupPage page in m_pages)
                 {
                     sb.AppendLine(page.MarkupEncoding);
-                    sb.AppendLine("\n\n");
                 }
 
                 return sb.ToString();

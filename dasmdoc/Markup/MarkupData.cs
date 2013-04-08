@@ -67,7 +67,7 @@ namespace dasmdoc.Markup
             get
             {
                 StringBuilder s = new StringBuilder();
-                s.AppendLine(new MarkupRawSection(this.m_sName, true).MarkupEncoding);
+                s.AppendLine(new MarkupRawSection(this.m_sName, Markup.MarkupSectionType.SubSection).MarkupEncoding);
                 
                 s.AppendFormat(
                 "\\ref \\c {0} {1}\n<br/><br/>" +

@@ -9,16 +9,18 @@ namespace dasmdoc.Markup
     {
         private String m_sName;
         private String m_sDesc;
+        private String m_sCallingConvention;
         private String m_sReturnType;
         private String m_sReturnDescription;
         private String m_sCode;
         private MarkupData[] m_parameters;
 
-        public MarkupFunction(MarkupFileReference fileRef, String sName, String sDesc, String sReturnType, String sReturnDesc, String sCode, MarkupData[] parameters)
+        public MarkupFunction(MarkupFileReference fileRef, String sName, String sDesc, String sCallingConvention, String sReturnType, String sReturnDesc, String sCode, MarkupData[] parameters)
             : base(fileRef)
         {
             m_sName = sName;
             m_sDesc = sDesc;
+            m_sCallingConvention = sCallingConvention;
             m_sReturnDescription = sReturnDesc;
             m_sReturnType = sReturnType;
             m_sCode = sCode;
@@ -119,15 +121,16 @@ namespace dasmdoc.Markup
             {
                 StringBuilder s = new StringBuilder();
 
-                s.AppendLine(new MarkupRawSection(this.m_sName, true).MarkupEncoding);
+                s.AppendLine(new MarkupRawSection(this.m_sName, MarkupSectionType.SubSection).MarkupEncoding);
 
                 s.AppendFormat(
-                "\\ref \\c {0} {1}{2}\n<br/><br/>" +
+                "\\ref \\c {0} \\ref \\c {1} {2}{3}\n<br/><br/>" +
                 "<b>Description:</b><br/>" +
-                "{3}\n<br/>" +
-                "{4}" +
-                "\\return \\ref \\c {5} {6}\n" +
+                "{4}\n<br/>" +
+                "{5}" +
+                "\\return \\ref \\c {6} {7}\n" +
                 "<br/>\n",
+                m_sCallingConvention,
                 m_sReturnType,
                 m_sName,
                 this.FormattedArguments,

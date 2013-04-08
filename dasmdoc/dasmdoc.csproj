@@ -51,10 +51,11 @@
     <Compile Include="Markup\MarkupData.cs" />
     <Compile Include="Markup\MarkupFileReference.cs" />
     <Compile Include="Markup\MarkupFunction.cs" />
-    <Compile Include="Markup\MarkupGroup.cs" />
+    <Compile Include="Markup\MarkupPageGroup.cs" />
     <Compile Include="Markup\MarkupPrimitive.cs" />
     <Compile Include="Markup\MarkupPage.cs" />
     <Compile Include="Markup\MarkupRawSection.cs" />
+    <Compile Include="Markup\MarkupSectionType.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="ParsingException.cs" />
     <Compile Include="Program.cs" />

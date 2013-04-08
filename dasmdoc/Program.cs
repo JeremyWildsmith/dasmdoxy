@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using dasmdoc.Markup;
+using System.Diagnostics;
 
 namespace dasmdoc
 {
@@ -25,19 +26,24 @@ namespace dasmdoc
 
                 FileInfo[] files = diSrc.GetFiles();
 
-                MarkupGroup root = new MarkupGroup("DasmDoxy");
+                MarkupPageGroup root = new MarkupPageGroup("Code");
 
                 foreach (FileInfo fi in files)
                 {
-                    if (!fi.Name.EndsWith(".10c") || !fi.Name.EndsWith(".dasm"))
+                    if (!(fi.Name.EndsWith(".10c") || fi.Name.EndsWith(".dasm")))
                         continue;
 
-                    DasmDocument doc = DasmDocument.parseDocument(fi);
-                    StreamWriter ss = new StreamWriter(new FileStream(diDest.FullName + @"\" + doc.FileReference.FileName + ".md", FileMode.Create));
-                    ss.WriteLine(doc.MarkupEncoding);
-                    ss.Flush();
-                    ss.Close();
+                    root.addPage(DasmDocument.parseDocument(fi).MarkupPage);
+
                 }
+                StreamWriter ss = new StreamWriter(new FileStream(diDest.FullName + @"\Code.md", FileMode.Create));
+                ss.WriteLine(root.MarkupEncoding);
+                ss.Flush();
+                ss.Close();
+                ProcessStartInfo pi = new ProcessStartInfo("doxygen.exe", "config");
+                pi.CreateNoWindow = false;
+                Process.Start(pi);
+
             }
             catch (Exception e)
             {
