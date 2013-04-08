@@ -22,10 +22,10 @@ namespace dasmdoc
         {
         }
 
-        public static DasmDocument parseDocument(String sPath)
+        public static DasmDocument parseDocument(FileInfo document)
         {
-            DasmDocument doc = new DasmDocument(sPath);
-            String sContents = File.ReadAllText(sPath);
+            DasmDocument doc = new DasmDocument(document.Name);
+            String sContents = new StreamReader(document.OpenRead()).ReadToEnd();
 
             //.Net Regex doesn't parse \r as would be expected.
             sContents = Regex.Replace(sContents, @"\r", "");
@@ -57,7 +57,7 @@ namespace dasmdoc
             return doc;
         }
 
-        public override string MarkupEncoding
+        public MarkupPage MarkupPage
         {
             get
             {
@@ -65,7 +65,7 @@ namespace dasmdoc
 
                 foreach (KeyValuePair<String, String> argument in m_floatingArguments)
                     doc.addAttribute(argument.Key, argument.Value);
-                
+
                 foreach (FloatingComment floating in m_floating)
                 {
                     doc.addSection(new MarkupRawSection(String.Empty, false, floating.Comment));
@@ -73,8 +73,8 @@ namespace dasmdoc
 
                 foreach (Data data in m_data)
                 {
-                    doc.addData(new MarkupData(data.FileReference, data.Type, 
-                                                data.Name, data.Description, 
+                    doc.addData(new MarkupData(data.FileReference, data.Type,
+                                                data.Name, data.Description,
                                                 data.Documentation.Content));
                 }
 
@@ -82,17 +82,24 @@ namespace dasmdoc
                 {
                     List<MarkupData> parameters = new List<MarkupData>();
 
-                    foreach(Parameter param in func.Parameters)
+                    foreach (Parameter param in func.Parameters)
                         parameters.Add(new MarkupData(func.FileReference, param.Type, param.Name, param.Description));
 
-                    doc.addFunction(new MarkupFunction(func.FileReference, 
-                                    func.Name, func.Description, 
+                    doc.addFunction(new MarkupFunction(func.FileReference,
+                                    func.Name, func.Description,
                                     func.ReturnType, func.ReturnDescription,
                                     func.Documentation.Definition, parameters.ToArray()));
                 }
 
-                return doc.MarkupEncoding;
-            
+                return doc;
+            }
+        }
+
+        public override string MarkupEncoding
+        {
+            get
+            {
+                return MarkupPage.MarkupEncoding;
             }
         }
     }

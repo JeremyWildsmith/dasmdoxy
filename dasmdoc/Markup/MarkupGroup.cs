@@ -46,15 +46,12 @@ namespace dasmdoc.Markup
             {
                 StringBuilder sb = new StringBuilder();
 
-                sb.AppendFormat("\\defgroup {0} {1}\n", this.Id, this.Name);
-                sb.AppendFormat("\\ingroup {0}\n@{{", this.Id);
-
                 foreach (MarkupPage page in m_pages)
                 {
                     sb.AppendLine(page.MarkupEncoding);
+                    sb.AppendLine("\n\n");
                 }
 
-                sb.AppendLine("\n@}");
                 return sb.ToString();
             }
         }

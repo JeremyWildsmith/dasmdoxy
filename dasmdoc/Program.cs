@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using dasmdoc.Markup;
 
 namespace dasmdoc
 {
@@ -11,17 +12,37 @@ namespace dasmdoc
     {
         static void Main(string[] args)
         {
-            FileStream fs = new FileStream("out.md", FileMode.Create);
-            StreamWriter ss = new StreamWriter(fs);
+            try
+            {
+                if (args.Length != 2)
+                    throw new Exception("Invalid number of arguments.");
 
-            DasmDocument doc = DasmDocument.parseDocument("peLoader.10c");
+                DirectoryInfo diSrc = new DirectoryInfo(args[0]);
+                DirectoryInfo diDest = new DirectoryInfo(args[1]);
 
-            //byte[] buffer = ASCIIEncoding.ASCII.GetBytes(doc.MarkupEncoding);
+                if (!diDest.Exists)
+                    diDest.Create();
 
-            String s = (doc.MarkupEncoding);
-            ss.WriteLine(doc.MarkupEncoding);
-            ss.Flush();
-            ss.Close();
+                FileInfo[] files = diSrc.GetFiles();
+
+                MarkupGroup root = new MarkupGroup("DasmDoxy");
+
+                foreach (FileInfo fi in files)
+                {
+                    if (!fi.Name.EndsWith(".10c") || !fi.Name.EndsWith(".dasm"))
+                        continue;
+
+                    DasmDocument doc = DasmDocument.parseDocument(fi);
+                    StreamWriter ss = new StreamWriter(new FileStream(diDest.FullName + @"\" + doc.FileReference.FileName + ".md", FileMode.Create));
+                    ss.WriteLine(doc.MarkupEncoding);
+                    ss.Flush();
+                    ss.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                System.Console.WriteLine(e.Message);
+            }
         }
     }
 }
