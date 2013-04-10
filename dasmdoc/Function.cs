@@ -11,7 +11,8 @@ namespace dasmdoc
     class Function
     {
         private const String PARAMETER_REGEX = @"param\(([a-zA-Z0-9*]+),[ \t]*([a-zA-Z0-9]+)\)[ \t]*([^\n\r]+)";
-        private const String RETURN_REGEX = @"return\(([a-zA-Z0-9*]+)\)[ \t]*(([^\n\r])+)";
+        private const String RETURN_REGEX = @"return\(([a-zA-Z0-9*]+)\)[ \t]*(([^\n\r])*)";
+        private const String CALL_ATTRIBUTE = @"call";
 
         private const int PARAMETER_TYPE_GROUP = 1;
         private const int PARAMETER_NAME_GROUP = 2;
@@ -39,8 +40,9 @@ namespace dasmdoc
                 if (m.Success)
                     return m;
             }
+            
+            throw new ParsingException(String.Format("Error locating return type to function {0}", this.Name), m_fileRef);
 
-            return null;
         }
 
         public MarkupFileReference FileReference
@@ -72,6 +74,14 @@ namespace dasmdoc
             get
             {
                 return m_docBlock.getAttribute(DasmDocBlock.ATTRIBUTE_DESCRIPTION);
+            }
+        }
+
+        public String CallingConvention
+        {
+            get
+            {
+                return m_docBlock.getAttribute(CALL_ATTRIBUTE);
             }
         }
 

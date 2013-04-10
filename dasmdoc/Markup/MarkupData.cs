@@ -80,8 +80,9 @@ namespace dasmdoc.Markup
                 );
 
                 s.AppendLine();
-
-                s.AppendFormat("<b>Code:</b>\n\\code {0} \\endcode", m_sCode);
+                
+                if(m_sCode.Trim().Length > 0)
+                    s.AppendFormat("<b>Code:</b>\n\\code {0} \\endcode", m_sCode);
 
                 return s.ToString();
             }

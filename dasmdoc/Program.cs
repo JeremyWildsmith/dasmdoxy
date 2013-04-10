@@ -45,9 +45,13 @@ namespace dasmdoc
                 Process.Start(pi);
 
             }
+            catch (ParsingException e)
+            {
+                System.Console.WriteLine(String.Format("Error occured while parsing source file {0}:{1}, {2}", e.FileReference.FileName, e.FileReference.LineNumber, e.Message));
+            }
             catch (Exception e)
             {
-                System.Console.WriteLine(e.Message);
+                System.Console.WriteLine("Unexpected error occured: " + e.Message);
             }
         }
     }

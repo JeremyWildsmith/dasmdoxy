@@ -124,7 +124,7 @@ namespace dasmdoc.Markup
                 s.AppendLine(new MarkupRawSection(this.m_sName, MarkupSectionType.SubSection).MarkupEncoding);
 
                 s.AppendFormat(
-                "\\ref \\c {0} \\ref \\c {1} {2}{3}\n<br/><br/>" +
+                "\\ref {0} \\ref {1} {2}{3}\n<br/><br/>" +
                 "<b>Description:</b><br/>" +
                 "{4}\n<br/>" +
                 "{5}" +
@@ -142,7 +142,8 @@ namespace dasmdoc.Markup
 
                 s.AppendLine();
 
-                s.AppendFormat("<b>Code:</b>\n\\code {0} \\endcode", m_sCode);
+                if (m_sCode.Trim().Length > 0)
+                    s.AppendFormat("<b>Code:</b>\n\\code {0} \\endcode", m_sCode);
 
                 return s.ToString();
             }

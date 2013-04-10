@@ -53,7 +53,12 @@ namespace dasmdoc
         {
             get
             {
-                return m_docBlock.getAttribute(DasmDocBlock.ATTRIBUTE_TYPE);
+                String sType = m_docBlock.getAttribute(DasmDocBlock.ATTRIBUTE_TYPE);
+
+                if (sType == null || sType.Trim().Length == 0)
+                    throw new ParsingException(String.Format("Invalid return type for data {0}", this.Name), m_fileRef);
+
+                return sType;
             }
         }
     }

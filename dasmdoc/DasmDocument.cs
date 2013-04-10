@@ -74,7 +74,7 @@ namespace dasmdoc
                 {
                     doc.addData(new MarkupData(data.FileReference, data.Type,
                                                 data.Name, data.Description,
-                                                data.Documentation.Content));
+                                                data.Documentation.Definition));
                 }
 
                 foreach (Function func in m_functions)
