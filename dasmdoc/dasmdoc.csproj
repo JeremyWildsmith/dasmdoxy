@@ -44,10 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallingConvention.cs" />
-    <Compile Include="DasmCommentType.cs" />
+    <Compile Include="Constant.cs" />
     <Compile Include="DasmDocBlock.cs" />
     <Compile Include="DasmDocument.cs" />
     <Compile Include="FloatingComment.cs" />
+    <Compile Include="IDocumentationFeature.cs" />
     <Compile Include="Markup\MarkupData.cs" />
     <Compile Include="Markup\MarkupFileReference.cs" />
     <Compile Include="Markup\MarkupFunction.cs" />

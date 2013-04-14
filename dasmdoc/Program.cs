@@ -13,13 +13,13 @@ namespace dasmdoc
     {
         static void Main(string[] args)
         {
-            try
+            //try
             {
-                if (args.Length != 2)
-                    throw new Exception("Invalid number of arguments.");
+                if (args.Length != 1)
+                    throw new Exception("Invalid number of arguments. First argument is path to source directory.");
 
                 DirectoryInfo diSrc = new DirectoryInfo(args[0]);
-                DirectoryInfo diDest = new DirectoryInfo(args[1]);
+                DirectoryInfo diDest = new DirectoryInfo("doc");
 
                 if (!diDest.Exists)
                     diDest.Create();
@@ -45,14 +45,15 @@ namespace dasmdoc
                 Process.Start(pi);
 
             }
-            catch (ParsingException e)
-            {
-                System.Console.WriteLine(String.Format("Error occured while parsing source file {0}:{1}, {2}", e.FileReference.FileName, e.FileReference.LineNumber, e.Message));
-            }
-            catch (Exception e)
-            {
-                System.Console.WriteLine("Unexpected error occured: " + e.Message);
-            }
+            //catch (ParsingException e)
+            //{
+            //    System.Console.WriteLine(String.Format("Error occured while parsing source file {0}:{1}, {2}", e.FileReference.FileName, e.FileReference.LineNumber, e.Message));
+            //}
+            //catch (Exception e)
+            //{
+            //    System.Console.WriteLine("Unexpected error occured: " + e.Message);
+                
+            //}
         }
     }
 }

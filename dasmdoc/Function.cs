@@ -8,27 +8,44 @@ using dasmdoc.Markup;
 
 namespace dasmdoc
 {
-    class Function
+    class Function : IDocumentationFeature
     {
-        private const String PARAMETER_REGEX = @"param\(([a-zA-Z0-9*]+),[ \t]*([a-zA-Z0-9]+)\)[ \t]*([^\n\r]+)";
-        private const String RETURN_REGEX = @"return\(([a-zA-Z0-9*]+)\)[ \t]*(([^\n\r])*)";
-        private const String CALL_ATTRIBUTE = @"call";
+        protected const String FUNCTION_REGEX   = @"(:([a-zA-Z_][0-9a-z-A-Z_]+)|([a-zA-Z_][0-9a-z-A-Z_]+):)((([\n\r]*[\t ][^\n\r]*)+))";
+        protected const String PARAMETER_REGEX  = @"param\(([a-zA-Z0-9*]+),[ \t]*([a-zA-Z0-9]+)\)[ \t]*([^\n\r]+)";
+        protected const String RETURN_REGEX     = @"return\(([a-zA-Z0-9*]+)\)[ \t]*(([^\n\r])*)";
+        
+        protected const String CALL_ATTRIBUTE   = @"call";
 
-        private const int PARAMETER_TYPE_GROUP = 1;
-        private const int PARAMETER_NAME_GROUP = 2;
-        private const int PARAMETER_DESCRIPTION_GROUP = 3;
+        protected const int FUNCTION_NAME_GROUP       = 3;
+        protected const int FUNCTION_DEFINITION_GROUP = 4;
 
+        protected const int PARAMETER_TYPE_GROUP = 1;
+        protected const int PARAMETER_NAME_GROUP = 2;
+        protected const int PARAMETER_DESCRIPTION_GROUP = 3;
 
-        private const int RETURN_TYPE_GROUP             = 1;
-        private const int RETURN_DESCRIPTION_GROUP      = 2;
+        protected const int RETURN_TYPE_GROUP             = 1;
+        protected const int RETURN_DESCRIPTION_GROUP      = 2;
 
-        private DasmDocBlock        m_docBlock;
-        private MarkupFileReference m_fileRef;
+        protected const int DATA_REGEX_NAMEGROUP = 3;
+        protected const int DATA_REGEX_DEFINITIONGROUP = 4;
 
-        public Function(MarkupFileReference fileRef, DasmDocBlock docBlock)
+        private DasmDocBlock m_docBlock;
+        private Match        m_functionMatch;
+
+        public Function(DasmDocBlock docBlock, Match funcMatch)
         {
-            m_fileRef = fileRef;
             m_docBlock = docBlock;
+            m_functionMatch = funcMatch;
+        }
+
+        public static Function parse(DasmDocBlock doc)
+        {
+            Match m = Regex.Match(doc.Content, FUNCTION_REGEX);
+
+            if (!m.Success)
+                return null;
+
+            return new Function(doc, m);
         }
 
         private Match getReturnMatch()
@@ -41,7 +58,7 @@ namespace dasmdoc
                     return m;
             }
             
-            throw new ParsingException(String.Format("Error locating return type to function {0}", this.Name), m_fileRef);
+            throw new ParsingException(String.Format("Error locating return type to function {0}", this.Name), this.FileReference);
 
         }
 
@@ -49,15 +66,7 @@ namespace dasmdoc
         {
             get
             {
-                return m_fileRef;
-            }
-        }
-
-        public DasmDocBlock Documentation
-        {
-            get
-            {
-                return m_docBlock;
+                return m_docBlock.FileReference;
             }
         }
 
@@ -65,7 +74,15 @@ namespace dasmdoc
         {
             get
             {
-                return m_docBlock.DefinitionName;
+                return m_functionMatch.Groups[FUNCTION_NAME_GROUP].Value;
+            }
+        }
+
+        public String Definition
+        {
+            get
+            {
+                return m_functionMatch.Groups[FUNCTION_DEFINITION_GROUP].Value;
             }
         }
 

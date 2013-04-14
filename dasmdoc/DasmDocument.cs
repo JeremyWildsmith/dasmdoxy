@@ -11,11 +11,10 @@ namespace dasmdoc
     class DasmDocument : MarkupPrimitive
     {
 
-        private List<Data>     m_data = new List<Data>();
+        private List<Data> m_data = new List<Data>();
         private List<Function> m_functions = new List<Function>();
-        private List<FloatingComment> m_floating = new List<FloatingComment>();
-
-        private Dictionary<String, String> m_floatingArguments = new Dictionary<String, String>();
+        private List<Constant> m_constants = new List<Constant>();
+        private List<FloatingComment>   m_floating = new List<FloatingComment>();
 
         protected DasmDocument(String sSrcPath)
             : base(new MarkupFileReference(sSrcPath, 0))
@@ -28,29 +27,27 @@ namespace dasmdoc
             String sContents = new StreamReader(document.OpenRead()).ReadToEnd();
 
             //.Net Regex doesn't parse \r as would be expected.
-            sContents = Regex.Replace(sContents, @"\r", "");
+            sContents = Regex.Replace(sContents, @"\r", String.Empty);
 
             MatchCollection matches = Regex.Matches(sContents, DasmDocBlock.COMMENTBLOCK_REGEX, RegexOptions.Singleline);
             
             foreach(Match m in matches)
             {
-                DasmDocBlock docBlock = new DasmDocBlock(m.Value);
                 MarkupFileReference fileRef = new MarkupFileReference(doc.FileReference.RelativePath, m.Index);
-                switch(docBlock.Type)
-                {
-                    case DasmCommentType.Function:
-                        doc.m_functions.Add(new Function(fileRef, docBlock));
-                        break;
-                    case DasmCommentType.Data:
-                        doc.m_data.Add(new Data(fileRef, docBlock));
-                        break;
-                    case DasmCommentType.Floating:
-                        String sFilteredContent = Regex.Replace(docBlock.Content, "^(;;?)", String.Empty, RegexOptions.Multiline);
-                        doc.m_floating.Add(new FloatingComment(sFilteredContent));
-                        break;
-                    default:
-                        throw new ParsingException("Unrecognized documentation type.");
-                }
+                DasmDocBlock docBlock = DasmDocBlock.parse(m.Value, fileRef);
+
+                IDocumentationFeature docFeature = null;
+
+                if ((docFeature = Data.parse(docBlock)) != null)
+                    doc.m_data.Add(docFeature as Data);
+                else if ((docFeature = Function.parse(docBlock)) != null)
+                    doc.m_functions.Add(docFeature as Function);
+                else if ((docFeature = FloatingComment.parse(docBlock)) != null)
+                    doc.m_floating.Add(docFeature as FloatingComment);
+                else if ((docFeature = Constant.parse(docBlock)) != null)
+                    doc.m_constants.Add(docFeature as Constant);
+                else
+                    throw new ParsingException("Unrecognized comment structure", fileRef);
             }
 
             return doc;
@@ -62,19 +59,23 @@ namespace dasmdoc
             {
                 MarkupPage doc = new MarkupPage(this.FileReference, this.FileReference.FileName);
 
-                foreach (KeyValuePair<String, String> argument in m_floatingArguments)
-                    doc.addAttribute(argument.Key, argument.Value);
-
                 foreach (FloatingComment floating in m_floating)
                 {
                     doc.addSection(new MarkupRawSection(String.Empty, MarkupSectionType.SubSection, floating.Comment));
+                }
+
+                foreach (Constant constant in m_constants)
+                {
+                    doc.addConstant(new MarkupData(constant.FileReference, constant.Type,
+                                                constant.Name, constant.Description,
+                                                constant.Definition));
                 }
 
                 foreach (Data data in m_data)
                 {
                     doc.addData(new MarkupData(data.FileReference, data.Type,
                                                 data.Name, data.Description,
-                                                data.Documentation.Definition));
+                                                data.Definition));
                 }
 
                 foreach (Function func in m_functions)
@@ -87,7 +88,7 @@ namespace dasmdoc
                     doc.addFunction(new MarkupFunction(func.FileReference,
                                     func.Name, func.Description, func.CallingConvention,
                                     func.ReturnType, func.ReturnDescription,
-                                    func.Documentation.Definition, parameters.ToArray()));
+                                    func.Definition, parameters.ToArray()));
                 }
 
                 return doc;

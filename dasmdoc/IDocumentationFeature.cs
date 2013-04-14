@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using dasmdoc.Markup;
 
 namespace dasmdoc
 {
-    enum DasmCommentType
+    interface IDocumentationFeature
     {
-        Function,
-        Data,
-        Floating,
+        MarkupFileReference FileReference { get; }
     }
 }

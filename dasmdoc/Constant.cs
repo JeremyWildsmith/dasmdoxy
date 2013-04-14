@@ -7,30 +7,30 @@ using dasmdoc.Markup;
 
 namespace dasmdoc
 {
-    class Data : IDocumentationFeature
+    class Constant : IDocumentationFeature
     {
-        protected const String DATA_REGEX = @"^(:([a-zA-Z_][0-9a-z-A-Z_]+)|([a-zA-Z_][0-9a-z-A-Z_]+):)((([\n\r][\t ]+(?i:dat)[\t ][^\n\r]+(,( +)?[^\n\r]+)*)|([\n\r]))+)$";
+        protected const String CONST_REGEX = @"#define[ \t]+([^\n\r]+)[ \t]+([^\n\r]+)";
         
-        protected const int DATA_NAME_GROUP = 1;
-        protected const int DATA_DEFINITION_GROUP = 4;
+        protected const int CONST_NAME_GROUP = 1;
+        protected const int CONST_DEFINITION_GROUP = 0;
 
         private DasmDocBlock m_docBlock;
         private Match        m_match;
 
-        protected Data(DasmDocBlock docBlock, Match match)
+        protected Constant(DasmDocBlock docBlock, Match match)
         {
             m_docBlock = docBlock;
             m_match = match;
         }
 
-        public static Data parse(DasmDocBlock doc)
+        public static Constant parse(DasmDocBlock doc)
         {
-            Match m = Regex.Match(doc.Content, DATA_REGEX);
+            Match m = Regex.Match(doc.Content, CONST_REGEX);
             
             if (!m.Success)
                 return null;
 
-            return new Data(doc, m);
+            return new Constant(doc, m);
         }
 
         public MarkupFileReference FileReference
@@ -45,7 +45,7 @@ namespace dasmdoc
         {
             get
             {
-                return m_match.Groups[DATA_DEFINITION_GROUP].Value;
+                return m_docBlock.Content;
             }
         }
 
@@ -53,7 +53,7 @@ namespace dasmdoc
         {
             get
             {
-                return m_match.Groups[DATA_NAME_GROUP].Value.Trim(':');
+                return m_match.Groups[CONST_NAME_GROUP].Value;
             }
         }
 

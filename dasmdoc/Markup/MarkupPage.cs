@@ -14,6 +14,7 @@ namespace dasmdoc.Markup
 
         private List<MarkupFunction>        m_functions = new List<MarkupFunction>();
         private List<MarkupData>            m_data = new List<MarkupData>();
+        private List<MarkupData>            m_constants = new List<MarkupData>();
 
         private List<MarkupRawSection>      m_rawSections = new List<MarkupRawSection>();
 
@@ -36,6 +37,11 @@ namespace dasmdoc.Markup
         public void addData(MarkupData data)
         {
             m_data.Add(data);
+        }
+
+        public void addConstant(MarkupData constant)
+        {
+            m_constants.Add(constant);
         }
 
         public void addSection(MarkupRawSection section)
@@ -76,6 +82,16 @@ namespace dasmdoc.Markup
                 foreach (MarkupRawSection sec in m_rawSections)
                 {
                     sb.AppendLine(sec.MarkupEncoding);
+                }
+
+                if(m_constants.Count > 0)
+                {
+                    sb.Append(new MarkupRawSection("Constants", MarkupSectionType.Section).MarkupEncoding);
+
+                    foreach (MarkupData md in m_constants)
+                    {
+                        sb.AppendFormat("***\n{0}\n\n", md.MarkupEncoding);
+                    }
                 }
 
                 if(m_data.Count > 0)
